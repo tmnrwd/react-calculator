@@ -14,11 +14,12 @@ class App extends React.Component {
       example: "pony",
       exampleArray: [],
       inputField: 0,
-      calculationResult: [],
+      calculationResult: 0,
       operator: " ",
       runningTotal: 0,
       runningTotalArray: [],
-      firstCalcNumber: []
+      firstCalcNumber: 0,
+      noNumberSupplied: false,
     }
   }
 
@@ -28,17 +29,27 @@ class App extends React.Component {
     }))
     this.runningTotalArrayConvert();
   }
-  
+
 
   operatorButton(input) {
-    if (this.state.runningTotalArray && this.state.runningTotalArray.length){
-    this.runningTotalArrayConvert();
     this.setState((state) => ({
-    operator: state.operator = input,
-    firstCalcNumber: state.firstCalcNumber = state.runningTotal,
+      operator: state.operator = input,
     }))
+    if (this.state.runningTotalArray && this.state.runningTotalArray.length && this.state.firstCalcNumber) {
+      this.runningTotalArrayConvert();
+      this.setState((state) => ({
+        firstCalcNumber: state.firstCalcNumber + state.runningTotal,
+      }))
+    }
+    else if (this.state.runningTotalArray && this.state.runningTotalArray.length) {
+      this.runningTotalArrayConvert();
+      this.setState((state) => ({
+        firstCalcNumber: state.runningTotal,
+      }))
+
+    }
     this.clearRunningTotal()
-  }
+
   }
 
   calculateResult() {
@@ -56,7 +67,7 @@ class App extends React.Component {
   runningTotalArrayConvert() {
     let array = this.state.runningTotalArray;
     let runningTotalString = array.join('');
-    let runningTotalNumber = parseInt(runningTotalString);
+    let runningTotalNumber = parseFloat(runningTotalString);
     this.setState((state) => ({
       runningTotal: state.runningTotal = runningTotalNumber
     }
@@ -71,63 +82,116 @@ class App extends React.Component {
     this.clearRunningTotal();
   }
 
-  equals() {
+  decideEquals() {
+    console.log("firstCalcNumber, on calling decideEquals:", this.state.firstCalcNumber)
+    console.log("operator, on calling decideEquals:", this.state.operator)
+    if (this.state.firstCalcNumber === 0) {
+      console.log("trig noFirstCalc")
+      this.equalsNoFirstCalc();
+    }
+    else {
+      console.log("trig else")
+      this.equals();
+    }
+    this.setState((state) => ({
+      noNumberSupplied: false
+    }));
+  }
+
+  equalsNoFirstCalc() {
     let operator = this.state.operator;
+    console.log("operator = ", operator)
     this.runningTotalArrayConvert();
-    if (this.state.runningTotalArray && this.state.runningTotalArray.length)
-    if (operator === " "){
+
+    if (operator === " ") {
       this.setState((state) => ({
         calculationResult: state.runningTotal
       }));
     }
-    if (this.state.firstCalcNumber !== 0){
     if (operator === "+") {
       this.setState((state) => ({
-        calculationResult: state.firstCalcNumber + state.runningTotal
+        calculationResult: state.calculationResult + state.runningTotal
       }));
     }
     if (operator === "-") {
       this.setState((state) => ({
-        calculationResult: state.firstCalcNumber - state.runningTotal
+        calculationResult: state.calculationResult - state.runningTotal
       }));
     }
     if (operator === "x") {
       this.setState((state) => ({
-        calculationResult: state.firstCalcNumber * state.runningTotal
+        calculationResult: state.calculationResult * state.runningTotal
       }));
     }
     if (operator === "/") {
       this.setState((state) => ({
-        calculationResult: state.firstCalcNumber / state.runningTotal
+        calculationResult: state.calculationResult / state.runningTotal
       }));
     }
+    this.clearRunningTotal();
     this.setState((state) => ({
-      firstCalcNumber: []
-    }));
+      operator: " "
+    }))
   }
-    else{
-    if (this.runningTotal !== 0) {
+
+  equals() {
+    let operator = this.state.operator;
+    console.log("operator = ", operator)
+    this.runningTotalArrayConvert();
+
+    if (operator === " ") {
+      this.setState((state) => ({
+        calculationResult: state.runningTotal
+      }));
+    }
+    if (this.state.firstCalcNumber !== 0) {
       if (operator === "+") {
         this.setState((state) => ({
-          calculationResult: state.calculationResult + state.runningTotal
+          calculationResult: state.firstCalcNumber + state.runningTotal
         }));
       }
       if (operator === "-") {
         this.setState((state) => ({
-          calculationResult: state.calculationResult - state.runningTotal
+          calculationResult: state.firstCalcNumber - state.runningTotal
         }));
       }
       if (operator === "x") {
         this.setState((state) => ({
-          calculationResult: state.calculationResult * state.runningTotal
+          calculationResult: state.firstCalcNumber * state.runningTotal
         }));
       }
       if (operator === "/") {
         this.setState((state) => ({
-          calculationResult: state.calculationResult / state.runningTotal
+          calculationResult: state.firstCalcNumber / state.runningTotal
         }));
       }
+      this.setState((state) => ({
+        firstCalcNumber: 0
+      }));
     }
+    else {
+      if (this.runningTotal !== 0) {
+        if (operator === "+") {
+          this.setState((state) => ({
+            calculationResult: state.calculationResult + state.runningTotal
+          }));
+        }
+        if (operator === "-") {
+          this.setState((state) => ({
+            calculationResult: state.calculationResult - state.runningTotal
+          }));
+        }
+        if (operator === "x") {
+          this.setState((state) => ({
+            calculationResult: state.calculationResult * state.runningTotal
+          }));
+        }
+        if (operator === "/") {
+          this.setState((state) => ({
+            calculationResult: state.calculationResult / state.runningTotal
+          }));
+        }
+      }
     }
     this.clearRunningTotal();
     this.setState((state) => ({
@@ -138,8 +202,8 @@ class App extends React.Component {
 
   clearRunningTotal() {
     this.setState((state) => ({
-      runningTotalArray: state.runningTotalArray = [],
-      runningTotal: state.runningTotal = [],
+      runningTotalArray: [],
+      runningTotal: state.runningTotal = 0,
     }))
   }
 
@@ -148,7 +212,7 @@ class App extends React.Component {
     this.setState((state) => ({
       operator: state.operator = " ",
       calculationResult: state.calculationResult = "",
-      firstCalcNumber: []
+      firstCalcNumber: 0
     }))
   }
 
@@ -156,115 +220,121 @@ class App extends React.Component {
   render() {
     return (
       <>
-      <Container>
-        <Card>
-      <Card.Body className="border border-dark">
-      <div class="border border-dark rounded text-center">
-          Calculator
+        <Container>
+          <Card>
+            <Card.Body className="border border-dark">
+              <div className="border border-dark rounded text-center">
+                Calculator
         </div> <br></br>
-        {/*{this.state.example} <br></br>*/}
+              {/*{this.state.example} <br></br>*/}
+              <br></br>
+              <br></br>
+              <div id="buttons" className="text-center">
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(7)}>
+                  7
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(8)}>
+                  8
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(9)}>
+                  9
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.operatorButton("+")}>
+                  +
+        </Button>
+                <br></br>
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(4)}>
+                  4
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(5)}>
+                  5
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(6)}>
+                  6
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.operatorButton("-")}>
+                  -
+        </Button>
+                <br></br>
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(1)}>
+                  1
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(2)}>
+                  2
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(3)}>
+                  3
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.operatorButton("x")}>
+                  x
+        </Button>
+                <br></br>
+                <Button className="border border-dark number-buttons" onClick={() => this.clearButton()}>
+                  C
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(0)}>
+                  0
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(".")}>
+                  .
+        </Button>
+                <Button className="border border-dark number-buttons" onClick={() => this.operatorButton("/")}>
+                  /
+        </Button>
         <br></br>
-        <br></br>
-        <div id="buttons" className="text-center">
-        <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(7)}>
-          7
+                <Button className="border border-dark equals-button" onClick={() => this.decideEquals()}>
+                  =
         </Button>
-        <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(8)}>
-          8
-        </Button>
-        <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(9)}>
-          9
-        </Button>
-        <Button className="border border-dark number-buttons" onClick={() => this.operatorButton("+")}>
-          +
-        </Button>
-        <br></br>
-        <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(4)}>
-          4
-        </Button>
-        <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(5)}>
-          5
-        </Button>
-        <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(6)}>
-          6
-        </Button>
-        <Button className="border border-dark number-buttons" onClick={() => this.operatorButton("-")}>
-          -
-        </Button>
-        <br></br>
-        <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(1)}>
-          1
-        </Button>
-        <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(2)}>
-          2
-        </Button>
-        <Button className="border border-dark number-buttons" onClick={() => this.concatenateInput(3)}>
-          3
-        </Button>
-        <Button className="border border-dark number-buttons" onClick={() => this.operatorButton("x")}>
-          x
-        </Button>
-        <br></br>
-        <Button className="border border-dark number-buttons" onClick={() => this.clearButton()}>
-          C
-        </Button>
-        
-        <Button className="border border-dark equals-button" onClick={() => this.equals()}>
-          Equals
-        </Button>
-        <Button className="border border-dark number-buttons" onClick={() => this.operatorButton("/")}>
-          /
-        </Button>
-        </div>
-        
-        <div id="box-div-container" className="d-flex justify-content-center">
+              </div>
 
-        <div id="box-div" className="text-center">
-          
-        <div id="box-row-1" className="">
-        <Row >
-        
-        <Col>
-        <div id="input" className="boxes">
-        <br></br>
-        {this.state.runningTotalArray}
-        </div>
-        </Col>
-   
-        <Col>
-        <div id ="operator" className="boxes">
-        <br></br>
-        {this.state.operator}
-        </div>
-        </Col>
-        </Row>
-        </div>
+              <div id="box-div-container" className="d-flex justify-content-center">
 
-        <div id="box-row-2">
-        <Row >
-        <Col>
-        <div id="stored-number" className="boxes">
-          <br></br>
-        {this.state.firstCalcNumber}
-        </div>
-        </Col>
-                
-        <Col>
-        <div id="result" className="boxes">
-        <br></br>
-        {this.state.calculationResult}
-        </div>
-        </Col>
+                <div id="box-div" className="text-center">
 
-        </Row>
-        </div>
-        </div>
+                  <div id="box-row-1" className="">
+                    <Row >
 
-        </div>
-        </Card.Body>
-        
-        </Card>
-        
+                      <Col>
+                        <div id="input" className="boxes">
+                          <br></br>
+                          {this.state.runningTotalArray}
+                        </div>
+                      </Col>
+
+                      <Col>
+                        <div id="operator" className="boxes">
+                          <br></br>
+                          {this.state.operator}
+                        </div>
+                      </Col>
+                    </Row>
+                  </div>
+
+                  <div id="box-row-2">
+                    <Row >
+                      <Col>
+                        <div id="stored-number" className="boxes">
+                          <br></br>
+                          {this.state.firstCalcNumber}
+                        </div>
+                      </Col>
+
+                      <Col>
+                        <div id="result" className="boxes">
+                          <br></br>
+                          {this.state.calculationResult}
+                        </div>
+                      </Col>
+
+                    </Row>
+                  </div>
+                </div>
+
+              </div>
+            </Card.Body>
+
+          </Card>
+
         </Container>
       </>
     );
