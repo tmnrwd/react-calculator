@@ -302,9 +302,9 @@ class App extends React.Component {
                       </Col>
 
                       <Col>
-                        <div id="operator" className="boxes">
+                      <div id="stored-number" className="boxes">
                           <br></br>
-                          {this.state.operator}
+                          {this.state.firstCalcNumber}
                         </div>
                       </Col>
                     </Row>
@@ -313,10 +313,11 @@ class App extends React.Component {
                   <div id="box-row-2">
                     <Row >
                       <Col>
-                        <div id="stored-number" className="boxes">
+                      <div id="operator" className="boxes">
                           <br></br>
-                          {this.state.firstCalcNumber}
+                          {this.state.operator}
                         </div>
+                        
                       </Col>
 
                       <Col>

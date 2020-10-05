@@ -9,8 +9,10 @@
 }
 
 .boxes{
-    height: 80px;
-    width: 70px;
+    height: 40px;
+    width: 53px;
+    padding: 0px;
+    align-items: center;
     
 }
 
